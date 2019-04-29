@@ -22,7 +22,7 @@ class OpenIdProvider implements AuthenticationProviderInterface
 
     public function authenticate(TokenInterface $token)
     {
-        if (! $this->supports($token)) {
+        if (! $token instanceof OpenIdToken) {
             throw new \InvalidArgumentException('Expecting OpenIdToken, got ' . \get_class($token));
         }
 
@@ -31,7 +31,7 @@ class OpenIdProvider implements AuthenticationProviderInterface
 //        }
 
         if ($user = $this->userProvider->findUserByToken($token)) {
-            $authenticatedToken = new OpenIdToken($token, $user->getRoles());
+            $authenticatedToken = new OpenIdToken($token->getOpenIdToken(), $user->getRoles());
             $authenticatedToken->setUser($user);
 
             return $authenticatedToken;
