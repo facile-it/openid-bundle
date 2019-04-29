@@ -4,8 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="facile_openid_login" path="/" controller="OpenIdBundle:OpenId:login" methods="GET" />
-
-    <route id="facile_openid_check" path="/" controller="OpenIdBundle:OpenId:check" methods="GET" />
+    <route id="facile_openid_login" path="/login" controller="facile_openid.openid_controller:login" methods="GET" />
+    <route id="facile_openid_check" path="/check" controller="facile_openid.openid_controller:check" methods="GET" />
 
 </routes>
