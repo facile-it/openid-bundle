@@ -42,7 +42,9 @@ security:
   firewalls:
     my_secured_firewall:
       pattern: ^/secured # choose the right pattern to protect behind the OpenId authentication
-      facile_openid: true
+      facile_openid:
+        # add the service reference for the user provider
+        user_provider: 'user_provider_service'
 
   # ...
 
@@ -52,6 +54,10 @@ security:
   - { path: ^/openid, roles: IS_AUTHENTICATED_ANONYMOUSLY }
   # ...
 ```
+
+The `user_provider` option must contain the ID of a service that implements the `Facile\OpenIdBundle\Security\UserProvider`
+interface. That class is the hook point of this bundle, where you can choose which user is getting authenticated with the
+provided (and validated) JWT token.
 
 ## Additional configuration
 
