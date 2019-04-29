@@ -14,12 +14,12 @@ class OpenIdBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
-        
+
         $extension = $container->getExtension('security');
         if (! $extension instanceof SecurityExtension) {
             throw new \InvalidArgumentException('Expecting SecurityExtension, got ' . \get_class($extension));
         }
-        
+
         $extension->addSecurityListenerFactory(new OpenIdFactory());
     }
 }
