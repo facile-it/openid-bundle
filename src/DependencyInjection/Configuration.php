@@ -12,11 +12,11 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder('facile_login');
+        $treeBuilder = new TreeBuilder('facile_openid');
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = \method_exists(TreeBuilder::class, 'getRootNode')
             ? $treeBuilder->getRootNode()
-            : $treeBuilder->root('facile_login');
+            : $treeBuilder->root('facile_openid');
 
         return $treeBuilder;
     }
