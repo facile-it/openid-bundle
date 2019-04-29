@@ -36,7 +36,7 @@
         "sort-packages": true
     },
     "scripts": {
-        "cs-check": "php-cs-fixer fix --ansi --verbose --dry-run ",
+        "cs-check": "php-cs-fixer fix --ansi --verbose --diff --dry-run ",
         "cs-fix": "php-cs-fixer fix --ansi --verbose"
     }
 }
