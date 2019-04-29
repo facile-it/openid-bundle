@@ -6,8 +6,8 @@
 
     <services>
         <service class="Facile\LoginBundle\Controller\OpenIdController" public="false">
-            <argument id="session" />
-            <argument id="router" />
+            <argument type="service" id="session" />
+            <argument type="service" id="router" />
         </service>
     </services>
 </container>

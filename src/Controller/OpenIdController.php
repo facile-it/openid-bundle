@@ -9,12 +9,8 @@ use Lcobucci\JWT\Parser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @Route(name="facile_openid_", path="/facile-openid")
- */
 class OpenIdController
 {
     private const NONCE_SESSION_ATTRIBUTE = 'facile-openid-nonce';
@@ -34,9 +30,6 @@ class OpenIdController
         $this->router = $router;
     }
 
-    /**
-     * @Route(name="login", path="/login")
-     */
     public function login()
     {
         try {
@@ -60,9 +53,6 @@ class OpenIdController
         );
     }
 
-    /**
-     * @Route(name="check", path="/check")
-     */
     public function check(Request $request)
     {
         $jwtToken = $request->get('id_token');
