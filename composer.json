@@ -1,5 +1,5 @@
 {
-    "name": "alai/login-bundle",
+    "name": "alai/openid-bundle",
     "description": "A Symfony bundle to integrate OpenId login",
     "type": "symfony-bundle",
     "license": "proprietary",
