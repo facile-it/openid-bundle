@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Facile\LoginBundle;
+namespace Facile\OpenIdBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class LoginBundle extends Bundle
+class OpenIdBundle extends Bundle
 {
 }

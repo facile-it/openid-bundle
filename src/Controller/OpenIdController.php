@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Facile\LoginBundle\Controller;
+namespace Facile\OpenIdBundle\Controller;
 
-use Facile\LoginBundle\Exception\AuthenticationException;
+use Facile\OpenIdBundle\Exception\AuthenticationException;
 use Lcobucci\JWT\Parser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

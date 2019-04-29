@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Facile\LoginBundle\Exception;
+namespace Facile\OpenIdBundle\Exception;
 
 use Symfony\Component\Security\Core\Exception\AuthenticationException as SymfonyAuthenticationException;
 

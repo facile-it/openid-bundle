@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Facile\LoginBundle\DependencyInjection;
+namespace Facile\OpenIdBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
