@@ -30,7 +30,7 @@ class OpenIdController
         $this->router = $router;
     }
 
-    public function login()
+    public function login(): RedirectResponse
     {
         try {
             $nonce = base64_encode(random_bytes(128));
