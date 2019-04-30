@@ -7,64 +7,56 @@ namespace Facile\OpenIdBundle\Security\Firewall;
 use Facile\OpenIdBundle\Security\Authentication\Token\OpenIdToken;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token as JWTToken;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Http\Firewall\ListenerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
+use Symfony\Component\Security\Http\Firewall\AbstractAuthenticationListener;
+use Symfony\Component\Security\Http\HttpUtils;
+use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 
-final class OpenIdListener implements ListenerInterface
+final class OpenIdListener extends AbstractAuthenticationListener
 {
-    /** @var TokenStorageInterface */
-    private $tokenStorage;
-
-    /** @var AuthenticationManagerInterface */
-    private $authenticationManager;
-
     /** @var Parser */
     private $jwtParser;
 
-    /**
-     * OpenIdListener constructor.
-     */
     public function __construct(
+        Parser $jwtParser,
         TokenStorageInterface $tokenStorage,
         AuthenticationManagerInterface $authenticationManager,
-        Parser $jwtParser
+        SessionAuthenticationStrategyInterface $sessionStrategy,
+        HttpUtils $httpUtils,
+        string $providerKey,
+        AuthenticationSuccessHandlerInterface $successHandler,
+        AuthenticationFailureHandlerInterface $failureHandler,
+        array $options = [],
+        LoggerInterface $logger = null,
+        EventDispatcherInterface $dispatcher = null
     ) {
-        $this->tokenStorage = $tokenStorage;
-        $this->authenticationManager = $authenticationManager;
         $this->jwtParser = $jwtParser;
+
+        parent::__construct(
+            $tokenStorage,
+            $authenticationManager,
+            $sessionStrategy,
+            $httpUtils,
+            $providerKey,
+            $successHandler,
+            $failureHandler,
+            $options,
+            $logger,
+            $dispatcher
+        );
     }
 
-    public function handle(GetResponseEvent $event)
+    protected function attemptAuthentication(Request $request)
     {
-        $request = $event->getRequest();
-
-        if ($request->get('_route') !== 'facile_openid_check') {
-            return;
-        }
-
         $token = new OpenIdToken($this->getJwtToken($request));
 
-        try {
-            $authToken = $this->authenticationManager->authenticate($token);
-            $this->tokenStorage->setToken($authToken);
-
-            return;
-        } catch (AuthenticationException $failed) {
-            // ... you might log something here
-
-            // To deny the authentication clear the token. This will redirect to the login page.
-            // Make sure to only clear your token, not those of other authentication listeners.
-            $token = $this->tokenStorage->getToken();
-            if ($token instanceof OpenIdToken) {
-                $this->tokenStorage->setToken(null);
-            }
-
-            return;
-        }
+        return $this->authenticationManager->authenticate($token);
     }
 
     private function getJwtToken(Request $request): JWTToken

@@ -7,21 +7,16 @@
     <services>
 
         <service id="facile_openid.openid_controller" class="Facile\OpenIdBundle\Controller\OpenIdController" public="false">
-            <argument type="service" id="session" />
-            <argument type="service" id="router" />
-            <tag name="controller.service_arguments" />
+            <argument type="service" id="session"/>
+            <argument type="service" id="router"/>
+            <tag name="controller.service_arguments"/>
         </service>
 
-        <service id="facile_openid.openid_provider" class="Facile\OpenIdBundle\Security\Authentication\Provider\OpenIdProvider" public="false">
-            <argument type="service" id="Facile\OpenIdBundle\Security\UserProvider" />
+        <service id="facile_openid.http_utils" class="\Symfony\Component\Security\Http\HttpUtils" public="false">
+            <argument type="service" id="router"/>
+            <argument type="service" id="router"/>
         </service>
 
-        <service id="facile_openid.openid_listener" class="Facile\OpenIdBundle\Security\Firewall\OpenIdListener" public="false">
-            <argument type="service" id="security.token_storage"/>
-            <argument type="service" id="security.authentication.manager"/>
-            <argument type="service" id="facile_openid.jwt_parser" />
-        </service>
-        
         <service id="facile_openid.jwt_parser" class="Lcobucci\JWT\Parser" public="false"/>
 
     </services>
