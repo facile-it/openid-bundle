@@ -34,17 +34,17 @@ class RedirectFactory
     {
         $nonce = $this->crypto->generateNonce();
 
-        return new RedirectResponse(
-            'http://login.dev-facile.it/oauth2/authorize?'
-            . http_build_query([
-                'response_type' => 'code id_token',
-                'scope' => 'openid email profile groups',
-                // TODO: parametrizzare il client id
-                'client_id' => 'client_test',
-                'nonce' => $nonce,
-                'state' => $this->crypto->getState(),
-                'redirect_uri' => $this->router->generate($this->options[OpenIdFactory::CHECK_PATH], [], RouterInterface::ABSOLUTE_URL),
-            ])
-        );
+        $parameters = [
+            'response_type' => 'code id_token',
+            'scope' => 'openid email profile groups',
+            // TODO: parametrizzare il client id
+            'client_id' => $this->options[OpenIdFactory::CLIENT_ID],
+            'nonce' => $nonce,
+            'state' => $this->crypto->getState(),
+            'redirect_uri' => $this->router->generate($this->options[OpenIdFactory::CHECK_PATH], [],
+                RouterInterface::ABSOLUTE_URL),
+        ];
+
+        return new RedirectResponse($this->options[OpenIdFactory::AUTH_ENDPOINT] . '?' . http_build_query($parameters));
     }
 }

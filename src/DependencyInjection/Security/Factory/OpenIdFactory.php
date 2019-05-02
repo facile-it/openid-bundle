@@ -20,13 +20,15 @@ use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessH
 class OpenIdFactory implements SecurityFactoryInterface
 {
     public const AUTH_ENDPOINT = 'auth_endpoint';
+    public const CLIENT_ID = 'client_id';
     public const USER_PROVIDER_SERVICE = 'provider';
     public const LOGIN_PATH = 'login_path';
     public const CHECK_PATH = 'check_path';
-    public const JWT_KEY_PATH = 'jwt_key_path';
 
+    public const JWT_KEY_PATH = 'jwt_key_path';
     private const REQUIRED_OPTIONS = [
         self::AUTH_ENDPOINT,
+        self::CLIENT_ID,
         self::USER_PROVIDER_SERVICE,
         self::LOGIN_PATH,
         self::CHECK_PATH,
@@ -71,6 +73,7 @@ class OpenIdFactory implements SecurityFactoryInterface
         $childNodes = $node->children();
 
         $childNodes->scalarNode(self::AUTH_ENDPOINT);
+        $childNodes->scalarNode(self::CLIENT_ID);
         $childNodes->scalarNode(self::USER_PROVIDER_SERVICE);
         $childNodes->scalarNode(self::LOGIN_PATH);
         $childNodes->scalarNode(self::CHECK_PATH);
