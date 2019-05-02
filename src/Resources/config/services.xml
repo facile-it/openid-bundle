@@ -6,10 +6,8 @@
 
     <services>
 
-        <service id="facile_openid.openid_controller" class="Facile\OpenIdBundle\Controller\OpenIdController" public="false">
+        <service id="facile_openid.crypto" class="\Facile\OpenIdBundle\Security\Crypto" public="false">
             <argument type="service" id="session"/>
-            <argument type="service" id="router"/>
-            <tag name="controller.service_arguments"/>
         </service>
 
         <service id="facile_openid.http_utils" class="\Symfony\Component\Security\Http\HttpUtils" public="false">

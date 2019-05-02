@@ -6,6 +6,7 @@ namespace Facile\OpenIdBundle\Security\Authentication\Provider;
 
 use Facile\OpenIdBundle\Exception\AuthenticationException;
 use Facile\OpenIdBundle\Security\Authentication\Token\OpenIdToken;
+use Facile\OpenIdBundle\Security\Crypto;
 use Facile\OpenIdBundle\Security\UserProvider;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Psr\Log\LoggerInterface;
@@ -18,15 +19,19 @@ class OpenIdProvider implements AuthenticationProviderInterface
     /** @var UserProvider */
     private $userProvider;
 
+    /** @var Crypto */
+    private $crypto;
+
     /** @var LoggerInterface */
     private $logger;
 
     /** @var false|string */
     private $jwtPublicKey;
 
-    public function __construct(UserProvider $userProvider, ?LoggerInterface $logger, string $keyPath)
+    public function __construct(UserProvider $userProvider, Crypto $crypto, ?LoggerInterface $logger, string $keyPath)
     {
         $this->userProvider = $userProvider;
+        $this->crypto = $crypto;
         $this->logger = $logger ?? new NullLogger();
         $this->jwtPublicKey = file_get_contents($keyPath);
     }
@@ -39,6 +44,12 @@ class OpenIdProvider implements AuthenticationProviderInterface
 
         if (! $this->isJwtTokenSignatureValid($token)) {
             $this->logger->error('Authentication failed: OpenId token signature is invalid');
+
+            throw new AuthenticationException();
+        }
+
+        if ($this->crypto->getNonce() !== $token->getOpenIdToken()->getClaim('nonce')) {
+            $this->logger->error('Authentication failed: OpenId token has invalid nonce');
 
             throw new AuthenticationException();
         }

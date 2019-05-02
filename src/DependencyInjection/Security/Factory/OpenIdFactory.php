@@ -6,6 +6,7 @@ namespace Facile\OpenIdBundle\DependencyInjection\Security\Factory;
 
 use Facile\OpenIdBundle\Security\Authentication\Provider\OpenIdProvider;
 use Facile\OpenIdBundle\Security\Firewall\OpenIdListener;
+use Facile\OpenIdBundle\Security\RedirectFactory;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\SecurityFactoryInterface;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
@@ -18,11 +19,11 @@ use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessH
 
 class OpenIdFactory implements SecurityFactoryInterface
 {
-    private const AUTH_ENDPOINT = 'auth_endpoint';
-    private const USER_PROVIDER_SERVICE = 'provider';
-    private const LOGIN_PATH = 'login_path';
-    private const CHECK_PATH = 'check_path';
-    private const JWT_KEY_PATH = 'jwt_key_path';
+    public const AUTH_ENDPOINT = 'auth_endpoint';
+    public const USER_PROVIDER_SERVICE = 'provider';
+    public const LOGIN_PATH = 'login_path';
+    public const CHECK_PATH = 'check_path';
+    public const JWT_KEY_PATH = 'jwt_key_path';
 
     private const REQUIRED_OPTIONS = [
         self::AUTH_ENDPOINT,
@@ -80,7 +81,12 @@ class OpenIdFactory implements SecurityFactoryInterface
     {
         $logger = new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
-        return new Definition(OpenIdProvider::class, [$userProvider, $logger, $config[self::JWT_KEY_PATH]]);
+        return new Definition(OpenIdProvider::class, [
+            $userProvider,
+            new Reference('facile_openid.crypto'),
+            $logger, 
+            $config[self::JWT_KEY_PATH]
+        ]);
     }
 
     private function createListenerDefinition(array $config, string $id): Definition
@@ -91,6 +97,7 @@ class OpenIdFactory implements SecurityFactoryInterface
         $definition = new Definition(OpenIdListener::class);
         $definition->setArguments([
             new Reference('facile_openid.jwt_parser'),
+            $this->createRedirectFactoryDefinition($config),
             new Reference('security.token_storage'),
             new Reference('security.authentication.manager'),
             new Reference('security.authentication.session_strategy'),
@@ -104,5 +111,14 @@ class OpenIdFactory implements SecurityFactoryInterface
         ]);
 
         return $definition;
+    }
+
+    private function createRedirectFactoryDefinition(array $config): Definition
+    {
+        return new Definition(RedirectFactory::class, [
+            new Reference('router'),
+            new Reference('facile_openid.crypto'),
+            $config
+        ]);
     }
 }
