@@ -24,8 +24,22 @@ class OpenIdFactory implements SecurityFactoryInterface
     private const CHECK_PATH = 'check_path';
     private const JWT_KEY_PATH = 'jwt_key_path';
 
+    private const REQUIRED_OPTIONS = [
+        self::AUTH_ENDPOINT,
+        self::USER_PROVIDER_SERVICE,
+        self::LOGIN_PATH,
+        self::CHECK_PATH,
+        self::JWT_KEY_PATH,
+    ];
+
     public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
     {
+        foreach (self::REQUIRED_OPTIONS as $option) {
+            if (empty($config[$option])) {
+                throw new \InvalidArgumentException(sprintf('Missing option %s in firewall %s', $option, $id));
+            }
+        }
+
         $providerId = 'security.authentication.provider.facile_openid.' . $id;
         $container->setDefinition($providerId, $this->createProviderDefinition($config));
 
@@ -53,16 +67,11 @@ class OpenIdFactory implements SecurityFactoryInterface
 
         $childNodes = $node->children();
 
-        $childNodes->scalarNode(self::AUTH_ENDPOINT)
-            ->cannotBeEmpty();
-        $childNodes->scalarNode(self::USER_PROVIDER_SERVICE)
-            ->cannotBeEmpty();
-        $childNodes->scalarNode(self::LOGIN_PATH)
-            ->cannotBeEmpty();
-        $childNodes->scalarNode(self::CHECK_PATH)
-            ->cannotBeEmpty();
-        $childNodes->scalarNode(self::JWT_KEY_PATH)
-            ->cannotBeEmpty();
+        $childNodes->scalarNode(self::AUTH_ENDPOINT);
+        $childNodes->scalarNode(self::USER_PROVIDER_SERVICE);
+        $childNodes->scalarNode(self::LOGIN_PATH);
+        $childNodes->scalarNode(self::CHECK_PATH);
+        $childNodes->scalarNode(self::JWT_KEY_PATH);
     }
 
     private function createProviderDefinition(array $config): Definition
