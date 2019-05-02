@@ -19,7 +19,7 @@ use Symfony\Component\Security\Http\Authentication\DefaultAuthenticationSuccessH
 class OpenIdFactory implements SecurityFactoryInterface
 {
     private const AUTH_ENDPOINT = 'auth_endpoint';
-    private const USER_PROVIDER_SERVICE = 'user_provider';
+    private const USER_PROVIDER_SERVICE = 'provider';
     private const LOGIN_PATH = 'login_path';
     private const CHECK_PATH = 'check_path';
     private const JWT_KEY_PATH = 'jwt_key_path';
@@ -32,7 +32,7 @@ class OpenIdFactory implements SecurityFactoryInterface
         self::JWT_KEY_PATH,
     ];
 
-    public function create(ContainerBuilder $container, $id, $config, $userProvider, $defaultEntryPoint)
+    public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPoint)
     {
         foreach (self::REQUIRED_OPTIONS as $option) {
             if (empty($config[$option])) {
@@ -40,8 +40,10 @@ class OpenIdFactory implements SecurityFactoryInterface
             }
         }
 
+        $userProvider = new Reference($userProviderId);
+
         $providerId = 'security.authentication.provider.facile_openid.' . $id;
-        $container->setDefinition($providerId, $this->createProviderDefinition($config));
+        $container->setDefinition($providerId, $this->createProviderDefinition($userProvider, $config));
 
         $listenerId = 'security.authentication.listener.facile_openid.' . $id;
         $container->setDefinition($listenerId, $this->createListenerDefinition($config, $id));
@@ -74,9 +76,8 @@ class OpenIdFactory implements SecurityFactoryInterface
         $childNodes->scalarNode(self::JWT_KEY_PATH);
     }
 
-    private function createProviderDefinition(array $config): Definition
+    private function createProviderDefinition(Reference $userProvider, array $config): Definition
     {
-        $userProvider = new Reference($config[self::USER_PROVIDER_SERVICE]);
         $logger = new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         return new Definition(OpenIdProvider::class, [$userProvider, $logger, $config[self::JWT_KEY_PATH]]);

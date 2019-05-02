@@ -46,6 +46,7 @@ class OpenIdProvider implements AuthenticationProviderInterface
         if ($user = $this->userProvider->findUserByToken($token)) {
             $authenticatedToken = new OpenIdToken($token->getOpenIdToken(), $user->getRoles());
             $authenticatedToken->setUser($user);
+            $authenticatedToken->setAuthenticated(true);
 
             return $authenticatedToken;
         }
@@ -64,7 +65,7 @@ class OpenIdProvider implements AuthenticationProviderInterface
     {
         $openIdToken = $token->getOpenIdToken();
 
-        if ('RS265' !== $alg = $openIdToken->getHeader('alg')) {
+        if ('RS256' !== $alg = $openIdToken->getHeader('alg')) {
             $this->logger->critical('Unsupported JWT signature algorithm: ' . $alg);
 
             throw new AuthenticationException();
