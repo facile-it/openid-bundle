@@ -1,0 +1,38 @@
+language: php
+sudo: false
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+php:
+  - 7.3
+  - 7.2
+  - 7.1
+
+before_install:
+  - phpenv config-rm xdebug.ini
+
+install:
+  - travis_retry travis_wait composer update --no-interaction --prefer-dist --prefer-stable
+
+script: vendor/bin/phpunit -v
+
+jobs:jobs:
+  include:
+    - stage: Test
+      php: 7.1
+      name: prefer-lowest
+      install:
+        - travis_retry travis_wait composer install --no-interaction --prefer-dist --prefer-stable
+        - travis_retry travis_wait composer update --no-interaction --prefer-dist --prefer-stable --prefer-lowest
+    - stage: Code style and static analysis
+      name: PHPStan
+      script:
+        - vendor/bin/phpstan analyze
+    - script:
+      name: Code style
+        - composer cs-check
+    - stage: Test coverage
+      script: phpdbg -qrr vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --coverage-text
+      after_success:
+        - php vendor/bin/php-coveralls -v
