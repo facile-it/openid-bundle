@@ -88,6 +88,12 @@ class OpenIdProvider implements AuthenticationProviderInterface
             throw new AuthenticationException();
         }
 
-        return $openIdToken->verify(new Sha256(), $this->jwtPublicKey);
+        try {
+            return $openIdToken->verify(new Sha256(), $this->jwtPublicKey);
+        } catch (\InvalidArgumentException $exception) {
+            $this->logger->critical('JWT signing public key is invalid, cannot verify OpenId token');
+
+            throw new AuthenticationException();
+        }
     }
 }
