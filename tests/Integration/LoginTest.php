@@ -9,9 +9,6 @@ use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token as JWTToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
 class LoginTest extends WebTestCase
 {
