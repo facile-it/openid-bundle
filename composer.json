@@ -31,11 +31,11 @@
     "require": {
         "php": "^7.1",
         "lcobucci/jwt": "^3.2",
-        "symfony/config": "^3.4",
-        "symfony/dependency-injection": "^3.4",
-        "symfony/http-kernel": "^3.4",
-        "symfony/routing": "^3.4",
-        "symfony/security-bundle": "^3.4"
+        "symfony/config": "^3.4|^4.0",
+        "symfony/dependency-injection": "^3.4|^4.0",
+        "symfony/http-kernel": "^3.4|^4.0",
+        "symfony/routing": "^3.4|^4.0",
+        "symfony/security-bundle": "^3.4|^4.0"
     },
     "require-dev": {
         "drew/debug-statements-fixers": "^0.5",
