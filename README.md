@@ -1,14 +1,23 @@
-# OpenIdBundle
+# facile-it/openid-bundle
+
+[![PHP Version](https://img.shields.io/badge/php-%5E7.1-blue.svg)](https://img.shields.io/badge/php-%5E7.1-blue.svg)
+[![Stable release][Last stable image]][Packagist link]
+[![Unstable release][Last unstable image]][Packagist link]
+
+[![Build status][Master build image]][Master build link]
+[![Coverage Status][Master coverage image]][Master coverage link]
+
+This bundles add a new [custom authentication provider](https://symfony.com/doc/current/security/custom_authentication_provider.html) for your Symfony firewall, allowing authentication of your users using a third party OpenId provider.
 
 ## Installation
 
 Require the package through Composer
 
 ```bash
-TODO
+composer require facile-it/openid-bundle
 ```
 
-Add the bundle to your kernel:
+Add the bundle to your app kernel:
 
 ```php
 class AppKernel extends Kernel
@@ -32,15 +41,13 @@ Add the two needed routes to your routing configuration; names and paths are up 
 facile_openid_login: # your login route, that will redirect your user to the OpenId service
     path: /openid/login
 
-facile_openid_check: # your check route, where your user will return to for authentication on your app
+facile_openid_check: # your check route, where your user will return back for authentication on your app
     path: /openid/check
 ```
 
 Define a service that implements the `\Facile\OpenIdBundle\Security\UserProvider` interface:
 ```php
 <?php
-
-declare(strict_types=1);
 
 namespace App\Security;
 
@@ -86,3 +93,12 @@ security:
         jwt_key_path: '/home/insight/jwt/public.key' # the file path to the public key that was used to sign the OpenId JWT token
         provider: App\Security\MyOpenIdUserProvider # the ID of the service implementing the UserProvider interface 
 ```
+
+[Last stable image]: https://poser.pugx.org/facile-it/openid-bundle/version.svg
+[Last unstable image]: https://poser.pugx.org/facile-it/openid-bundle/v/unstable.svg
+[Master build image]: https://travis-ci.org/facile-it/openid-bundle.svg
+[Master coverage image]: https://coveralls.io/repos/facile-it/openid-bundle/badge.svg?branch=master&service=github
+
+[Packagist link]: https://packagist.org/packages/facile-it/openid-bundle
+[Master build link]: https://travis-ci.org/facile-it/openid-bundle
+[Master coverage link]: https://coveralls.io/github/facile-it/openid-bundle?branch=master
