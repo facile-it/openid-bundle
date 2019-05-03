@@ -20,6 +20,7 @@ $finder = PhpCsFixer\Finder::create();
 
 $autoloadPathProvider = new Facile\CodingStandards\AutoloadPathProvider();
 $finder->in($autoloadPathProvider->getPaths());
+$finder->exclude('cache');
 
 $config->setFinder($finder);
 

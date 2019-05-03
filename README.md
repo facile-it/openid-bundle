@@ -84,15 +84,16 @@ security:
 
   firewalls:
     my_secured_firewall:
-      pattern: ^/secured # choose the right pattern to protect behind the OpenId authentication
+      pattern: ^/(secured|openid) # choose the right pattern to protect behind the OpenId authentication 
       facile_openid:
         auth_endpoint: 'http://login.example.com/oauth2/authorize' # the endpoint of the OpenId service to redirect to for authentication 
         client_id: 'client_test' # your client ID
         login_path: facile_openid_login # the route name or path of your login route
         check_path: facile_openid_check # the route name or path of your check route
-        jwt_key_path: '/home/insight/jwt/public.key' # the file path to the public key that was used to sign the OpenId JWT token
+        jwt_key_path: '/some/path/to/jwt/public.key' # the file path to the public key that was used to sign the OpenId JWT token
         provider: App\Security\MyOpenIdUserProvider # the ID of the service implementing the UserProvider interface 
 ```
+*NOTE*: the `login_path` & `check_path` routes must be matched by the pattern of this firewall, or othewise the firewall will not be triggered.
 
 [Last stable image]: https://poser.pugx.org/facile-it/openid-bundle/version.svg
 [Last unstable image]: https://poser.pugx.org/facile-it/openid-bundle/v/unstable.svg

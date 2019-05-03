@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Facile\OpenIdBundle\Tests\Unit;
 
 use Facile\OpenIdBundle\DependencyInjection\Security\Factory\OpenIdFactory;
@@ -22,8 +24,7 @@ class OpenIdBundleTest extends TestCase
         $container->getExtension('security')
             ->shouldBeCalled()
             ->willReturn($securityExtension->reveal());
-        
-        
+
         $bundle = new OpenIdBundle();
         $bundle->build($container->reveal());
     }

@@ -24,8 +24,8 @@ class OpenIdFactory implements SecurityFactoryInterface
     public const USER_PROVIDER_SERVICE = 'provider';
     public const LOGIN_PATH = 'login_path';
     public const CHECK_PATH = 'check_path';
-
     public const JWT_KEY_PATH = 'jwt_key_path';
+
     private const REQUIRED_OPTIONS = [
         self::AUTH_ENDPOINT,
         self::CLIENT_ID,
@@ -96,6 +96,7 @@ class OpenIdFactory implements SecurityFactoryInterface
     {
         $httpUtils = new Reference('facile_openid.http_utils');
         $logger = new Reference('logger', ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        $config['require_previous_session'] = false;
 
         $definition = new Definition(OpenIdListener::class);
         $definition->setArguments([

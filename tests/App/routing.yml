@@ -1,0 +1,13 @@
+unsecured_route:
+  path: /unsecured
+  controller: \Facile\OpenIdBundle\Tests\App\Controller\UnsecuredController::index
+
+secured_router:
+  path: /secured/index
+  controller: \Facile\OpenIdBundle\Tests\App\Controller\SecuredController::index
+
+facile_openid_login:
+  path: /secured/login
+
+facile_openid_check:
+  path: /secured/check
