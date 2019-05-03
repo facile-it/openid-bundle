@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace Facile\OpenIdBundle\Tests\Integration;
 
+use Facile\OpenIdBundle\Tests\App\AppKernel;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\Token as JWTToken;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
-class LoginTest extends BaseIntegrationTestCase
+class LoginTest extends WebTestCase
 {
+    protected static function getKernelClass(): string
+    {
+        return AppKernel::class;
+    }
+
     public function testUnsecuredRoute(): void
     {
         $client = static::createClient();
@@ -30,7 +38,12 @@ class LoginTest extends BaseIntegrationTestCase
         try {
             $client->request('GET', '/secured/index');
         } catch (\Throwable $exception) {
-            $this->assertInstanceOf(InsufficientAuthenticationException::class, $exception->getPrevious());
+            $rootException = $exception;
+            do {
+                $rootException = $rootException->getPrevious();
+            } while ($rootException->getPrevious());
+
+            $this->assertInstanceOf(AccessDeniedException::class, $rootException);
 
             throw $exception;
         }
