@@ -17,7 +17,7 @@ install:
 
 script: vendor/bin/phpunit -v
 
-jobs:jobs:
+jobs:
   include:
     - stage: Test
       php: 7.1
@@ -29,8 +29,7 @@ jobs:jobs:
       name: PHPStan
       script:
         - vendor/bin/phpstan analyze
-    - script:
-      name: Code style
+    - name: Code style
         - composer cs-check
     - stage: Test coverage
       script: phpdbg -qrr vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --coverage-text
