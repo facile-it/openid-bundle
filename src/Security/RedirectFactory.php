@@ -41,13 +41,20 @@ class RedirectFactory
             'client_id' => $this->options[OpenIdFactory::CLIENT_ID],
             'nonce' => $nonce,
             'state' => $this->crypto->getState(),
-            'redirect_uri' => $this->router->generate(
-                $this->options[OpenIdFactory::CHECK_PATH],
-                [],
-                RouterInterface::ABSOLUTE_URL
-            ),
+            'redirect_uri' => $this->getRedirectUri(),
         ];
 
         return new RedirectResponse($this->options[OpenIdFactory::AUTH_ENDPOINT] . '?' . http_build_query($parameters));
+    }
+
+    private function getRedirectUri(): string
+    {
+        $checkPath = $this->options[OpenIdFactory::CHECK_PATH];
+
+        if ($this->router->getRouteCollection()->get($checkPath)) {
+            return $this->router->generate($checkPath, [], RouterInterface::ABSOLUTE_URL);
+        }
+
+        return $this->router->getContext()->getBaseUrl() . $checkPath;
     }
 }

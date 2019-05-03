@@ -8,16 +8,58 @@ use Facile\OpenIdBundle\DependencyInjection\Security\Factory\OpenIdFactory;
 use Facile\OpenIdBundle\Security\Crypto;
 use Facile\OpenIdBundle\Security\RedirectFactory;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
 class RedirectFactoryTest extends TestCase
 {
-    public function testToOpenIdLogin(): void
+    public function testToOpenIdLoginWithCheckRouteName(): void
     {
+        $checkPath = 'check_path_route';
+
         $router = $this->prophesize(RouterInterface::class);
-        $router->generate('check_path_route', [], RouterInterface::ABSOLUTE_URL)
+        $routeCollection = $this->prophesize(RouteCollection::class);
+
+        $router->getRouteCollection()
+            ->willReturn($routeCollection->reveal());
+        $routeCollection->get($checkPath)
+            ->willReturn($this->prophesize(Route::class));
+        $router->generate($checkPath, [], RouterInterface::ABSOLUTE_URL)
             ->shouldBeCalled()
             ->willReturn('http://localhost/check');
+
+        $this->executeTest($router->reveal(), $checkPath);
+    }
+
+    public function testToOpenIdLoginWithCheckPath(): void
+    {
+        $checkPath = '/check';
+
+        $router = $this->prophesize(RouterInterface::class);
+        $routeCollection = $this->prophesize(RouteCollection::class);
+        $requestContext = $this->prophesize(RequestContext::class);
+
+        $router->getRouteCollection()
+            ->willReturn($routeCollection->reveal());
+        $routeCollection->get($checkPath)
+            ->willReturn(null);
+        $router->getContext()
+            ->willReturn($requestContext->reveal());
+        $requestContext->getBaseUrl()
+            ->willReturn('http://localhost');
+
+        $this->executeTest($router->reveal(), $checkPath);
+    }
+
+    public function executeTest(RouterInterface $router, string $checkPath): void
+    {
+        $options = [
+            OpenIdFactory::AUTH_ENDPOINT => 'https://openid.dev/endpoint',
+            OpenIdFactory::CLIENT_ID => 'test_client_id',
+            OpenIdFactory::CHECK_PATH => $checkPath,
+        ];
 
         $crypto = $this->prophesize(Crypto::class);
         $crypto->generateNonce()
@@ -27,14 +69,8 @@ class RedirectFactoryTest extends TestCase
             ->shouldBeCalled()
             ->willReturn('fetched_state');
 
-        $options = [
-            OpenIdFactory::AUTH_ENDPOINT => 'https://openid.dev/endpoint',
-            OpenIdFactory::CLIENT_ID => 'test_client_id',
-            OpenIdFactory::CHECK_PATH => 'check_path_route',
-        ];
-
         $factory = new RedirectFactory(
-            $router->reveal(),
+            $router,
             $crypto->reveal(),
             $options
         );
