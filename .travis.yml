@@ -23,7 +23,7 @@ jobs:
       php: 7.1
       name: prefer-lowest
       install:
-        - travis_retry travis_wait composer install --no-interaction --prefer-dist --prefer-stable
+        - travis_retry travis_wait composer install --no-interaction --prefer-dist
         - travis_retry travis_wait composer update --no-interaction --prefer-dist --prefer-stable --prefer-lowest
     - stage: Code style and static analysis
       name: PHPStan
