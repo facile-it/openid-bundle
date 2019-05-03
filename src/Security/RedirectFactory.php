@@ -38,7 +38,6 @@ class RedirectFactory
         $parameters = [
             'response_type' => 'code id_token',
             'scope' => 'openid email profile groups',
-            // TODO: parametrizzare il client id
             'client_id' => $this->options[OpenIdFactory::CLIENT_ID],
             'nonce' => $nonce,
             'state' => $this->crypto->getState(),
