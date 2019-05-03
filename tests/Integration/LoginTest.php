@@ -29,26 +29,6 @@ class LoginTest extends WebTestCase
         $this->assertStringContainsString('unsecured', $crawler->text());
     }
 
-    public function testRedirectToOpenIdProvider(): void
-    {
-        $client = static::createClient();
-
-        $this->expectException(HttpException::class);
-
-        try {
-            $client->request('GET', '/secured/index');
-        } catch (\Throwable $exception) {
-            $rootException = $exception;
-            do {
-                $rootException = $rootException->getPrevious();
-            } while ($rootException->getPrevious());
-
-            $this->assertInstanceOf(AccessDeniedException::class, $rootException);
-
-            throw $exception;
-        }
-    }
-
     public function testFullLoginFlow(): void
     {
         $client = static::createClient();
