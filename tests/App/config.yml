@@ -14,13 +14,17 @@ security:
   firewalls:
     my_secured_firewall:
       pattern: ^/secured
+      anonymous: true
       facile_openid:
         auth_endpoint: 'https://login.openid.dev/oauth2/authorize' 
         client_id: 'client_test'
         login_path: facile_openid_login
         check_path: facile_openid_check
-        jwt_key_path: '/some/path/to/jwt/public.key'
+        jwt_key_path: '%kernel.project_dir%/jwt/public.key'
         provider: Facile\OpenIdBundle\Tests\App\Security\UserProvider
+
+  access_control:
+    - { path: ^/secured, roles: ROLE_USER }
 
 services:
   logger:

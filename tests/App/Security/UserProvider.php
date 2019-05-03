@@ -12,6 +12,6 @@ class UserProvider implements \Facile\OpenIdBundle\Security\UserProvider
 {
     public function findUserByToken(OpenIdToken $token): ?UserInterface
     {
-        return new User('logged_in_user', 'no-password');
+        return new User('logged_in_user', 'no-password', ['ROLE_USER']);
     }
 }
