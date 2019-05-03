@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Facile\OpenIdBundle\Tests\Integration;
 
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Token as JWTToken;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Exception\InsufficientAuthenticationException;
 
@@ -38,6 +41,7 @@ class LoginTest extends BaseIntegrationTestCase
         $client = static::createClient();
         $client->catchExceptions(false);
 
+        // request login_path route
         $client->request('GET', '/secured/login');
 
         $response = $client->getResponse();
@@ -57,5 +61,46 @@ class LoginTest extends BaseIntegrationTestCase
         $this->assertArrayHasKey('redirect_uri', $redirectParameters);
 
         $this->assertStringEndsWith('/secured/check', $redirectParameters['redirect_uri']);
+
+        // return to check_path route with valid token
+        $jwtToken = $this->prepareValidJwtToken($redirectParameters['nonce']);
+
+        $client->request('GET', '/secured/check', [
+            'id_token' => $jwtToken->__toString(),
+        ]);
+
+        $response = $client->getResponse();
+        $this->assertNotNull($response);
+        $this->assertSame(302, $response->getStatusCode());
+        $locationHeader = $response->headers->get('Location');
+        $this->assertSame('http://localhost/', $locationHeader);
+    }
+
+    private function prepareValidJwtToken(string $nonce): JWTToken
+    {
+        $builder = new Builder();
+
+        $builder->setIssuer('https://login.openid.dev');
+        $builder->setAudience('http://localhost');
+        $builder->setId('4f1g23a12aa', true);
+        $builder->setIssuedAt(time());
+
+        $builder->set('uid', 1);
+        $builder->set('nonce', $nonce);
+
+        $this->signJwtToken($builder);
+
+        return $builder->getToken();
+    }
+
+    private function signJwtToken(Builder $builder): void
+    {
+        $privateKeyFile = dirname(__DIR__) . '/App/jwt/private.key';
+        $this->assertFileExists($privateKeyFile, 'Missing signing private key');
+
+        $signingPrivateKey = file_get_contents($privateKeyFile);
+        $this->assertNotFalse($signingPrivateKey);
+
+        $builder->sign(new Sha256(), $signingPrivateKey);
     }
 }
