@@ -54,7 +54,7 @@ namespace App\Security;
 use Facile\OpenIdBundle\Security\Authentication\Token\OpenIdToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class MyOpenIdUserProvider implements Facile\OpenIdBundle\Security\UserProvider
+class MyOpenIdUserProvider implements \Facile\OpenIdBundle\Security\UserProvider
 {
     /**
      * Authentication hook point for the entire bundle.
