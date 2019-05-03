@@ -87,8 +87,8 @@ class OpenIdFactory implements SecurityFactoryInterface
         return new Definition(OpenIdProvider::class, [
             $userProvider,
             new Reference('facile_openid.crypto'),
-            $logger, 
-            $config[self::JWT_KEY_PATH]
+            $logger,
+            $config[self::JWT_KEY_PATH],
         ]);
     }
 
@@ -121,7 +121,7 @@ class OpenIdFactory implements SecurityFactoryInterface
         return new Definition(RedirectFactory::class, [
             new Reference('router'),
             new Reference('facile_openid.crypto'),
-            $config
+            $config,
         ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Facile\OpenIdBundle\Security;
 
 use Facile\OpenIdBundle\DependencyInjection\Security\Factory\OpenIdFactory;
@@ -19,8 +21,7 @@ class RedirectFactory
 
     /**
      * RedirectFactory constructor.
-     * @param RouterInterface $router
-     * @param Crypto $crypto
+     *
      * @param string[] $options
      */
     public function __construct(RouterInterface $router, Crypto $crypto, array $options)
@@ -41,8 +42,11 @@ class RedirectFactory
             'client_id' => $this->options[OpenIdFactory::CLIENT_ID],
             'nonce' => $nonce,
             'state' => $this->crypto->getState(),
-            'redirect_uri' => $this->router->generate($this->options[OpenIdFactory::CHECK_PATH], [],
-                RouterInterface::ABSOLUTE_URL),
+            'redirect_uri' => $this->router->generate(
+                $this->options[OpenIdFactory::CHECK_PATH],
+                [],
+                RouterInterface::ABSOLUTE_URL
+            ),
         ];
 
         return new RedirectResponse($this->options[OpenIdFactory::AUTH_ENDPOINT] . '?' . http_build_query($parameters));

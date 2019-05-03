@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Facile\OpenIdBundle\Security;
 
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -7,7 +9,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 /**
  * This class provides the small bits of cryptography needed to handle the
  * OpenId authentication, nominally a nonce to be stored in the session and
- * a "state" string, fixed per user session. 
+ * a "state" string, fixed per user session.
  */
 class Crypto
 {
@@ -33,7 +35,7 @@ class Crypto
         }
 
         $this->session->set(self::NONCE_SESSION_ATTRIBUTE, $nonce);
-        
+
         return $nonce;
     }
 
@@ -43,11 +45,11 @@ class Crypto
     public function getNonce(): string
     {
         $nonce = $this->session->get(self::NONCE_SESSION_ATTRIBUTE);
-        
+
         if (empty($nonce)) {
             throw new \RuntimeException('Unable to retrieve nonce');
         }
-        
+
         return $nonce;
     }
 

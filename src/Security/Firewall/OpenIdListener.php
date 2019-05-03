@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Facile\OpenIdBundle\Security\Firewall;
 
 use Facile\OpenIdBundle\DependencyInjection\Security\Factory\OpenIdFactory;
-use Facile\OpenIdBundle\Security\RedirectFactory;
 use Facile\OpenIdBundle\Security\Authentication\Token\OpenIdToken;
+use Facile\OpenIdBundle\Security\RedirectFactory;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Token as JWTToken;
 use Psr\Log\LoggerInterface;
