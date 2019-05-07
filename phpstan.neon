@@ -4,9 +4,8 @@ parameters:
         - src
     ignoreErrors:
          - "/Call to function method_exists.. with 'Symfony.+' and 'getRootNode' will always evaluate to false./"
-#         - '/Parameter \$.+ of method Sentry\\SentryBundle\\EventListener\\ErrorListener::onConsoleException\(\) has invalid typehint type Symfony\\Component\\Console\\Event\\ConsoleExceptionEvent./'
-#         - '/Call to method getException\(\) on an unknown class Symfony\\Component\\Console\\Event\\ConsoleExceptionEvent./'
-#         - '/Access to undefined constant Symfony\\Component\\Console\\ConsoleEvents::EXCEPTION./'
+         - '/^Cannot call method defaultValue\(\) on Symfony\\Component\\Config\\Definition\\Builder\\NodeParentInterface\|null\.$/'
+
 includes:
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/jangregor/phpstan-prophecy/src/extension.neon

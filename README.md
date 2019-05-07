@@ -91,7 +91,12 @@ security:
         login_path: facile_openid_login # the route name or path of your login route
         check_path: facile_openid_check # the route name or path of your check route
         jwt_key_path: '/some/path/to/jwt/public.key' # the file path to the public key that was used to sign the OpenId JWT token
-        provider: App\Security\MyOpenIdUserProvider # the ID of the service implementing the UserProvider interface 
+        provider: App\Security\MyOpenIdUserProvider # the ID of the service implementing the UserProvider interface
+
+        # optional configuration parameters:
+        scope: # default value: ['email']; openid scope is implicit
+        - email
+        - profile 
 ```
 *NOTE*: the `login_path` & `check_path` routes must be matched by the pattern of this firewall, or othewise the firewall will not be triggered.
 

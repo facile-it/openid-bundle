@@ -25,6 +25,7 @@ class OpenIdFactory implements SecurityFactoryInterface
     public const LOGIN_PATH = 'login_path';
     public const CHECK_PATH = 'check_path';
     public const JWT_KEY_PATH = 'jwt_key_path';
+    public const SCOPE = 'scope';
 
     private const REQUIRED_OPTIONS = [
         self::AUTH_ENDPOINT,
@@ -33,6 +34,7 @@ class OpenIdFactory implements SecurityFactoryInterface
         self::LOGIN_PATH,
         self::CHECK_PATH,
         self::JWT_KEY_PATH,
+        self::SCOPE,
     ];
 
     public function create(ContainerBuilder $container, $id, $config, $userProviderId, $defaultEntryPoint)
@@ -78,6 +80,12 @@ class OpenIdFactory implements SecurityFactoryInterface
         $childNodes->scalarNode(self::LOGIN_PATH);
         $childNodes->scalarNode(self::CHECK_PATH);
         $childNodes->scalarNode(self::JWT_KEY_PATH);
+        $childNodes->arrayNode(self::SCOPE)
+            ->scalarPrototype()
+            ->cannotBeEmpty()
+            ->end()
+            ->defaultValue(['email'])
+        ;
     }
 
     private function createProviderDefinition(Reference $userProvider, array $config): Definition

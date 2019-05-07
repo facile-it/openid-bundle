@@ -16,7 +16,7 @@ class RedirectFactory
     /** @var Crypto */
     private $crypto;
 
-    /** @var string[] */
+    /** @var array */
     private $options;
 
     /**
@@ -35,9 +35,16 @@ class RedirectFactory
     {
         $nonce = $this->crypto->generateNonce();
 
+        $scopes = $this->options[OpenIdFactory::SCOPE];
+        if (! is_array($scopes)) {
+            throw new \InvalidArgumentException('Expecting array of string, got ' . gettype($scopes));
+        }
+
+        array_unshift($scopes, 'openid');
+
         $parameters = [
             'response_type' => 'code id_token',
-            'scope' => 'openid email profile groups',
+            'scope' => implode(' ', array_unique($scopes)),
             'client_id' => $this->options[OpenIdFactory::CLIENT_ID],
             'nonce' => $nonce,
             'state' => $this->crypto->getState(),

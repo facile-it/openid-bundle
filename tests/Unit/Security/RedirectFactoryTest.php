@@ -30,7 +30,9 @@ class RedirectFactoryTest extends TestCase
             ->shouldBeCalled()
             ->willReturn('http://localhost/check');
 
-        $this->executeTest($router->reveal(), $checkPath);
+        $redirectParameters = $this->executeTest($router->reveal(), $checkPath);
+
+        $this->assertSame('openid email', $redirectParameters['scope']);
     }
 
     public function testToOpenIdLoginWithCheckPath(): void
@@ -50,16 +52,60 @@ class RedirectFactoryTest extends TestCase
         $requestContext->getBaseUrl()
             ->willReturn('http://localhost');
 
-        $this->executeTest($router->reveal(), $checkPath);
+        $redirectParameters = $this->executeTest($router->reveal(), $checkPath);
+
+        $this->assertSame('openid email', $redirectParameters['scope']);
     }
 
-    public function executeTest(RouterInterface $router, string $checkPath): void
+    /**
+     * @dataProvider scopesProvider
+     *
+     * @param $scopes
+     */
+    public function testToOpenIdLoginWithCustomScope(array $scopes, string $expectedScope): void
+    {
+        $checkPath = '/check';
+
+        $router = $this->prophesize(RouterInterface::class);
+        $routeCollection = $this->prophesize(RouteCollection::class);
+        $requestContext = $this->prophesize(RequestContext::class);
+
+        $router->getRouteCollection()
+            ->willReturn($routeCollection->reveal());
+        $routeCollection->get($checkPath)
+            ->willReturn(null);
+        $router->getContext()
+            ->willReturn($requestContext->reveal());
+        $requestContext->getBaseUrl()
+            ->willReturn('http://localhost');
+
+        $redirectParameters = $this->executeTest($router->reveal(), $checkPath, $scopes);
+
+        $this->assertSame($expectedScope, $redirectParameters['scope']);
+    }
+
+    public function scopesProvider(): array
+    {
+        return [
+            [['email', 'profile', 'groups'], 'openid email profile groups'],
+            [['email', 'groups', 'openid'], 'openid email groups'],
+            [['openid'], 'openid'],
+            [[], 'openid email'],
+        ];
+    }
+
+    private function executeTest(RouterInterface $router, string $checkPath, ?array $scopes = null): array
     {
         $options = [
             OpenIdFactory::AUTH_ENDPOINT => 'https://openid.dev/endpoint',
             OpenIdFactory::CLIENT_ID => 'test_client_id',
             OpenIdFactory::CHECK_PATH => $checkPath,
+            OpenIdFactory::SCOPE => ['email'],
         ];
+
+        if ($scopes) {
+            $options[OpenIdFactory::SCOPE] = $scopes;
+        }
 
         $crypto = $this->prophesize(Crypto::class);
         $crypto->generateNonce()
@@ -85,10 +131,11 @@ class RedirectFactoryTest extends TestCase
         parse_str($queryString, $redirectParameters);
 
         $this->assertSame('code id_token', $redirectParameters['response_type']);
-        $this->assertSame('openid email profile groups', $redirectParameters['scope']);
         $this->assertSame($options[OpenIdFactory::CLIENT_ID], $redirectParameters['client_id']);
         $this->assertSame('generated_nonce', $redirectParameters['nonce']);
         $this->assertSame('fetched_state', $redirectParameters['state']);
         $this->assertSame('http://localhost/check', $redirectParameters['redirect_uri']);
+
+        return $redirectParameters;
     }
 }
